@@ -18,6 +18,8 @@
  
 - `JM_rumination.wav`：反芻
 - `JM_grazing.wav`：採食
+
+Eating 的樣本全部來自 JM_grazing，Rumination 的樣本全部來自 JM_rumination。
 音檔附有逐次下顎運動的標注（`b`、`c`、`x` 是採食，`r` 是反芻）。原始音檔不放在這個 repo，notebook 執行時會自動下載，使用前請先看資料集頁面的授權條款。
  
 與原程式的不同：
@@ -43,7 +45,7 @@
  
 ```bash
 pip install -r requirements.txt
-jupyter notebook PCEN_CNN_PyTorch_public.ipynb
+jupyter notebook PCEN_CNN_PyTorch.ipynb
 ```
  
 在 Google Colab 上直接上傳 notebook、從頭執行即可（需另外 `pip install librosa`）。執行後會產生：
