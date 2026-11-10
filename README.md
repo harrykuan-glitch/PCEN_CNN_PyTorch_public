@@ -6,11 +6,11 @@
  
 | 指標 | 平均 ± 標準差（10 個 seed） |
 |---|---|
-| Accuracy | 0.9995 ± 0.0010 |
-| Macro-F1 | 0.9995 ± 0.0010 |
-| Weighted-F1 | 0.9995 ± 0.0010 |
+| Accuracy | 1.0000 |
+| Macro-F1 | 1.0000 |
+| Weighted-F1 | 1.0000 |
  
-測試集共 427 個窗口（Eating 256、Rumination 171）。10 個 seed 裡 8 個是 1.0000，另外 2 個是 0.9977。
+測試集共 427 個窗口（Eating 256、Rumination 171）。
  
 ## 資料集
  
@@ -35,11 +35,13 @@ Eating 的樣本全部來自 JM_grazing，Rumination 的樣本全部來自 JM_ru
 5. 模型：`Resize(64×64) → BN → Conv32 → MaxPool → BN → Conv64 → MaxPool → BN → GlobalAvgPool → Dense128 → Dropout0.4 → Dense2`，共 28,168 個可訓練參數。
 6. 訓練：Adam（學習率 1e-3、batch 64、最多 50 epoch）、class weight 設為 balanced、Dense(128) 加 L2(1e-4)、EarlyStopping（patience 5，還原最佳權重）、ReduceLROnPlateau（factor 0.5、patience 3）。
 7. 評估：seed 0–9 各訓練一次，報告測試集指標的平均與標準差。
+8. 匯出：載入 seed 0 的權重匯出成 ONNX（輸入為標準化後的 PCEN 特徵，形狀 (batch, 1, 64, 63)，batch 維度為動態），用 ONNX Runtime 在整個測試集上與 PyTorch 比對，logits 最大差異 9.5e-6，預測類別 100% 一致。特徵抽取仍在模型外，用 librosa 完成。
 
 與原程式的不同：
 - 切分和評估都只在這兩段錄音內進行，沒有跨牛隻、跨場域的評估。
 - 噪音增強用白噪音，原程式的雜訊取自現場錄音。
 - 只有訓練部分，不含 TFLite 量化與 ESP32 部署。
+- Eating 的樣本全部來自 JM_grazing，Rumination 的樣本全部來自 JM_rumination。
 
 ## 執行方式
  
@@ -53,3 +55,4 @@ jupyter notebook PCEN_CNN_PyTorch.ipynb
 - `pcen_features.npz`：標準化後的特徵
 - `results_per_seed.csv`：每個 seed 的測試集指標
 - `cnn_pcen_seed0.pt`：seed 0 的模型權重
+- `cnn_pcen_seed0.onnx`：seed 0 的 ONNX 模型，可用 ONNX Runtime 載入
